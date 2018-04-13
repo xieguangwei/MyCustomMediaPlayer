@@ -3,7 +3,7 @@
     android:id="@+id/vgl"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="#000000">
 
     <com.xgw.custommediaplayer.view.MyTextureView
         android:id="@+id/texture_view"
