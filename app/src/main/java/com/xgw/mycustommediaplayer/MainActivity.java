@@ -34,27 +34,15 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        List<String> paths = StorageUtils.getFilePaths(Environment.getExternalStorageDirectory().getPath());
-        List<String> names = StorageUtils.getNames(Environment.getExternalStorageDirectory().getPath());
-        final List<VideoBean> videoBeanList = new ArrayList<>();
-        for (int i = 0; i < paths.size(); i++) {
-            if (paths.get(i).endsWith(".mp4")) {
-                VideoBean videoBean = new VideoBean();
-                videoBean.setUrl(paths.get(i));
-                videoBeanList.add(videoBean);
-            }
+        List<VideoBean> videoBeen = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            VideoBean videoBean = new VideoBean();
+            videoBean.setName("视频" + i);
+            videoBean.setUrl("http://play.g3proxy.lecloud.com/vod/v2/MjQ5LzM3LzIwL2xldHYtdXRzLzE0L3Zlcl8wMF8yMi0xMTA3NjQxMzkwLWF2Yy00MTk4MTAtYWFjLTQ4MDAwLTUyNjExMC0zMTU1NTY1Mi00ZmJjYzFkNzA1NWMyNDc4MDc5OTYxODg1N2RjNzEwMi0xNDk4NTU3OTYxNzQ4Lm1wNA==?b=479&mmsid=65565355&tm=1499247143&key=98c7e781f1145aba07cb0d6ec06f6c12&platid=3&splatid=345&playid=0&tss=no&vtype=13&cvid=2026135183914&payff=0&pip=08cc52f8b09acd3eff8bf31688ddeced&format=0&sign=mb&dname=mobile&expect=1&tag=mobile&xformat=super");
+            videoBean.setPlaying(i == 0);
+            videoBeen.add(videoBean);
         }
-
-        for (int i = 0; i < names.size(); i++) {
-            videoBeanList.get(i).setName(names.get(i));
-        }
-        extraIv.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                VideoCoverUtils.load(MainActivity.this,extraIv,videoBeanList.get(0).getUrl());
-            }
-        },200);
-        mediaPlayer.setVideoList(videoBeanList);
+        mediaPlayer.setVideoList(videoBeen);
         mediaPlayer.setVideoPlayListener(new SimpleVideoPlayListener() {
             @Override
             public void onCompletion() {
