@@ -784,4 +784,17 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         KLog.e("onResume");
         setPlayModelImage();
     }
+
+    /**
+     * 按返回按钮调用
+     * @return
+     */
+    public boolean onBackPressed() {
+        if (listener != null && screenStatus == ScreenStatus.SCREEN_STATUS_FULL) {
+            listener.onExitFullScreen();
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
