@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.xgw.custommediaplayer.videogesture.VideoGestureLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vgl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <com.xgw.custommediaplayer.view.MyTextureView
+        android:id="@+id/texture_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+
+    <RelativeLayout
+        android:id="@+id/video_list_rl"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="#66000000"
+        android:visibility="gone">
+
+        <include layout="@layout/video_side_list_layout" />
+    </RelativeLayout>
+
+    <include layout="@layout/video_bottom_progress_layout" />
+
+    <com.xgw.custommediaplayer.view.MyCoverImageView
+        android:id="@+id/cover_iv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:visibility="gone" />
+
+    <include layout="@layout/video_loading_layout" />
+
+    <Button
+        android:id="@+id/btnPlay"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/play_start" />
+
+    <include layout="@layout/video_reload_layout" />
+
+    <com.xgw.custommediaplayer.videogesture.ShowControlLayout
+        android:id="@+id/scl"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"></com.xgw.custommediaplayer.videogesture.ShowControlLayout>
+</com.xgw.custommediaplayer.videogesture.VideoGestureLayout>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/play_progress"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="10dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/play_start_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="00:00"
+        android:textColor="#ffffff"
+        android:textSize="18sp" />
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_weight="1"
+        android:background="@null"
+        android:max="0"
+        android:maxHeight="5.0dip"
+        android:minHeight="5.0dip"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:progress="0"
+        android:progressDrawable="@drawable/tx_bottom_seek_progress"
+        android:thumb="@drawable/tx_bottom_seek_thumb" />
+
+    <TextView
+        android:id="@+id/duration_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:text="--:--"
+        android:textColor="#ffffff"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/play_model_iv"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/ic_play_model_order" />
+
+    <ImageView
+        android:id="@+id/full_screen_iv"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginRight="10dp"
+        android:padding="3dp"
+        android:src="@drawable/video_full_screen" />
+</LinearLayout>
