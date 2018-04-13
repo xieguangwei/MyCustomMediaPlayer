@@ -93,6 +93,8 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     private RecyclerView videoListRecyclerView;
     private VideoListAdapter videoListAdapter;
 
+    private boolean isTextureAvailable = false;
+    private boolean isFirstEnter = true;
 
     /**
      * handler每隔500ms刷新一次当前播放进度
@@ -209,6 +211,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     }
 
     private void init(Context context) {
+        isFirstEnter = true;
         View contentView = LayoutInflater.from(context).inflate(R.layout.my_media_player_layout, this, true);
         //初始化控件
         textureView = (MyTextureView) contentView.findViewById(R.id.texture_view);
@@ -363,6 +366,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
             KLog.e("onSurfaceTextureAvailable");
             mSurface = new Surface(surfaceTexture);//连接MediaPlayer和TextureView两个对象
+            isTextureAvailable = true;
             //设置第一次打开时的播放器
             playSpecifiedVideo(playUrl);
         }
@@ -374,6 +378,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
 
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+            isTextureAvailable = false;
             return false;
         }
 
@@ -405,10 +410,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         setPlayUrl(url);
         //没设置正在播放的视频，默认播放第一个视频
         if (TextUtils.isEmpty(playUrl)) {
-            showReload();
-            if (listener != null) {
-                listener.onError(new Exception("initPlayUrl时视频地址为空！！！"));
-            }
+            onErrorHandle(new Exception("initPlayUrl时视频地址为空！！！"));
             return;
         }
 
@@ -419,10 +421,22 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         } catch (Exception e) {
             KLog.e(e.getMessage());
             e.printStackTrace();
-            showReload();
-            if (listener != null) {
-                listener.onError(e);
-            }
+            onErrorHandle(e);
+        }
+    }
+
+    /**
+     * 播放出错时的处理
+     *
+     * @param e
+     */
+    private void onErrorHandle(Exception e) {
+        showReload();
+        stopLoading();
+        mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
+        btnPlay.setBackgroundResource(R.drawable.play_start);
+        if (listener != null) {
+            listener.onError(e);
         }
     }
 
@@ -435,10 +449,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         setPlayUrl(url);
         //没设置正在播放的视频，默认播放第一个视频
         if (TextUtils.isEmpty(playUrl)) {
-            showReload();
-            if (listener != null) {
-                listener.onError(new Exception("playSpecifiedVideo时视频地址为空!!!"));
-            }
+            onErrorHandle(new Exception("playSpecifiedVideo时视频地址为空!!!"));
             return;
         }
 
@@ -454,10 +465,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         } catch (Exception e) {
             KLog.e(e.getMessage());
             e.printStackTrace();
-            showReload();
-            if (listener != null) {
-                listener.onError(e);
-            }
+            onErrorHandle(e);
 
         }
     }
@@ -466,58 +474,77 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     private MediaPlayer.OnPreparedListener onPreparedListener = new MediaPlayer.OnPreparedListener() {
         @Override
         public void onPrepared(MediaPlayer mediaPlayer) {
-            //准备播放
-            //隐藏视频加载进度框
-            KLog.e("onPrepared");
-            //进行视频的播放
-            MyMediaPlayManager.play();
-            videoListAdapter.setPlay(playUrl, MyMediaPlayer.this);
-            mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
-            mHandler.sendEmptyMessage(UPDATE_TIME_AND_PROGRESS);
-            btnPlay.setBackgroundResource(R.drawable.play_pause);
-            if (currentProgress > 0) {
-                seekTo(currentProgress);
-            }
-            stopLoading();
-            dismissReload();
-            setControlVisibility(GONE, GONE, GONE);
-            coverIv.setVisibility(GONE);
-            if (listener != null) {
-                listener.onPrepared(playUrl);
-            }
+            onPreparedHandle();
         }
     };
+
+    /**
+     * 准备完成的处理
+     */
+    private void onPreparedHandle() {
+        //准备播放
+        //隐藏视频加载进度框
+        KLog.e("onPrepared");
+        //进行视频的播放
+        MyMediaPlayManager.play();
+        videoListAdapter.setPlay(playUrl, MyMediaPlayer.this);
+        mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
+        mHandler.sendEmptyMessage(UPDATE_TIME_AND_PROGRESS);
+        btnPlay.setBackgroundResource(R.drawable.play_pause);
+        if (currentProgress > 0) {
+            seekTo(currentProgress);
+        }
+        stopLoading();
+        dismissReload();
+        setControlVisibility(GONE, GONE, GONE);
+        coverIv.setVisibility(GONE);
+        if (listener != null) {
+            listener.onPrepared(playUrl);
+        }
+    }
 
     //缓冲，设置第二个进度条
     private MediaPlayer.OnBufferingUpdateListener onBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
         @Override
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
-            KLog.e("设置第二条进度：" + percent);
-            int secondProgress = (int) (mSeekBar.getMax() * (percent / 100f));
-            mSeekBar.setSecondaryProgress(secondProgress);
+            onBufferingUpdateHandle(percent);
         }
     };
+
+    /**
+     * 缓存进度条更新处理
+     *
+     * @param percent
+     */
+    private void onBufferingUpdateHandle(int percent) {
+        KLog.e("设置第二条进度：" + percent);
+        int secondProgress = (int) (mSeekBar.getMax() * (percent / 100f));
+        mSeekBar.setSecondaryProgress(secondProgress);
+    }
 
     //播放完成
     private MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
         public void onCompletion(MediaPlayer mediaPlayer) {
             //回调该方法说明播单个视频完成
-            KLog.e("onCompletion");
-//            coverIv.setVisibility(VISIBLE);
-            btnPlay.setBackgroundResource(R.drawable.play_start);
-            setControlVisibility(VISIBLE, GONE, GONE);
-            mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
-            currentProgress = 0;
-            if (listener != null) {
-                listener.onCompletion();
-            }
             onCompleteHandle();
         }
     };
 
+    /**
+     * 播放完成时的处理
+     */
     private void onCompleteHandle() {
-        //回调该方法说明播单个视频完成
+        KLog.e("onCompletion");
+//            coverIv.setVisibility(VISIBLE);
+        btnPlay.setBackgroundResource(R.drawable.play_start);
+        setControlVisibility(VISIBLE, GONE, GONE);
+        mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
+        currentProgress = 0;
+        if (listener != null) {
+            listener.onCompletion();
+        }
+
         KLog.e("onCompletion");
         coverIv.setVisibility(VISIBLE);
         mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
@@ -557,13 +584,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     private MediaPlayer.OnErrorListener onErrorListener = new MediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-            showReload();
-            stopLoading();
-            mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
-            btnPlay.setBackgroundResource(R.drawable.play_start);
-            if (listener != null) {
-                listener.onError(new Exception("OnErrorListener视频播放出错！！！错误码：(" + i + "," + i1 + ")"));
-            }
+            onErrorHandle(new Exception("错误码：(" + i + "," + i1 + ")"));
             return false;
         }
     };
@@ -621,11 +642,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             mPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();
-            showReload();
-            stopLoading();
-            if (listener != null) {
-                listener.onError(e);
-            }
+            onErrorHandle(e);
         }
     }
 
@@ -773,6 +790,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         if (mHandler != null) {
             mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
         }
+        btnPlay.setBackgroundResource(R.drawable.play_start);
         coverIv.setVisibility(VISIBLE);
         setControlVisibility(VISIBLE, VISIBLE, VISIBLE);
     }
@@ -783,10 +801,16 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     public void onResume() {
         KLog.e("onResume");
         setPlayModelImage();
+        if (!isFirstEnter && isTextureAvailable) {
+            btnPlay.setBackgroundResource(R.drawable.play_pause);
+            playSpecifiedVideo(playUrl);
+        }
+        isFirstEnter = false;
     }
 
     /**
      * 按返回按钮调用
+     *
      * @return
      */
     public boolean onBackPressed() {
