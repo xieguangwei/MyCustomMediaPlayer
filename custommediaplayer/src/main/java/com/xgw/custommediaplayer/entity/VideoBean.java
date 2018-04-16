@@ -13,6 +13,13 @@ public class VideoBean implements Serializable{
     private String name;
     private boolean isPlaying;
 
+    public VideoBean(String url, String coverUrl, String name, boolean isPlaying) {
+        this.url = url;
+        this.coverUrl = coverUrl;
+        this.name = name;
+        this.isPlaying = isPlaying;
+    }
+
     public String getUrl() {
         return url;
     }

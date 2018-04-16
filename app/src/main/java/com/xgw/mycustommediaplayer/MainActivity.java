@@ -34,15 +34,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void initView() {
-        List<VideoBean> videoBeen = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            VideoBean videoBean = new VideoBean();
-            videoBean.setName("视频" + i);
-            videoBean.setUrl("http://play.g3proxy.lecloud.com/vod/v2/MjQ5LzM3LzIwL2xldHYtdXRzLzE0L3Zlcl8wMF8yMi0xMTA3NjQxMzkwLWF2Yy00MTk4MTAtYWFjLTQ4MDAwLTUyNjExMC0zMTU1NTY1Mi00ZmJjYzFkNzA1NWMyNDc4MDc5OTYxODg1N2RjNzEwMi0xNDk4NTU3OTYxNzQ4Lm1wNA==?b=479&mmsid=65565355&tm=1499247143&key=98c7e781f1145aba07cb0d6ec06f6c12&platid=3&splatid=345&playid=0&tss=no&vtype=13&cvid=2026135183914&payff=0&pip=08cc52f8b09acd3eff8bf31688ddeced&format=0&sign=mb&dname=mobile&expect=1&tag=mobile&xformat=super");
-            videoBean.setPlaying(i == 0);
-            videoBeen.add(videoBean);
-        }
-        mediaPlayer.setVideoList(videoBeen);
+        mediaPlayer.setVideoList(getVideoListData());
         mediaPlayer.setVideoPlayListener(new SimpleVideoPlayListener() {
             @Override
             public void onCompletion() {
@@ -77,12 +69,41 @@ public class MainActivity extends BaseActivity {
                 super.onExitFullScreen();
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mediaPlayer.getLayoutParams();
                 params.width = LinearLayout.LayoutParams.MATCH_PARENT;
-                params.height = SizeUtils.dp2px(300);
+                params.height = SizeUtils.dp2px(220);
                 mediaPlayer.setLayoutParams(params);
                 mediaPlayer.setScreenParams(ScreenStatus.SCREEN_STATUS_NORMAL);
             }
         });
         mediaPlayer.setController(this, new MyVideoControlManager());
+    }
+
+    private static List<VideoBean> getVideoListData() {
+        List<VideoBean> videoList = new ArrayList<>();
+        videoList.add(new VideoBean(
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-33-30.mp4",
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-30-43.jpg",
+                "办公室小野开番外了，居然在办公室开澡堂！老板还点赞？",true));
+        videoList.add(new VideoBean(
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-10_10-20-26.mp4",
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-10_10-09-58.jpg",
+                "小野在办公室用丝袜做茶叶蛋 边上班边看《外科风云》",false));
+        videoList.add(new VideoBean(
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-03_13-02-41.mp4",
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-03_12-52-08.jpg",
+                "花盆叫花鸡，怀念玩泥巴，过家家，捡根竹竿当打狗棒的小时候",false));
+        videoList.add(new VideoBean(
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/04/2017-04-28_18-20-56.mp4",
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/04/2017-04-28_18-18-22.jpg",
+                "针织方便面，这可能是史上最不方便的方便面",false));
+        videoList.add(new VideoBean(
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/04/2017-04-26_10-06-25.mp4",
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/04/2017-04-26_10-00-28.jpg",
+                "小野的下午茶，办公室不只有KPI，也有诗和远方",false));
+        videoList.add(new VideoBean(
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/04/2017-04-21_16-41-07.mp4",
+                "http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/04/2017-04-21_16-37-16.jpg",
+                "可乐爆米花，嘭嘭嘭......收花的人说要把我娶回家",false));
+        return videoList;
     }
 
     @Override

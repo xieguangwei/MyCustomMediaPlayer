@@ -35,13 +35,13 @@ public class VideoListAdapter extends BaseQuickAdapter<VideoBean, BaseViewHolder
                 .setText(R.id.bottom_name_tv, item.getName()).addOnClickListener(R.id.item_video_iv);
         RelativeLayout parentRootRl = helper.getView(R.id.parent_root_rl);
         RelativeLayout childRootRl = helper.getView(R.id.child_root_rl);
-        setParams(parentRootRl,childRootRl);
+        setParams(parentRootRl, childRootRl);
 
-        VideoCoverUtils.load(mContext,(ImageView) helper.getView(R.id.item_video_iv),item.getUrl());
+        VideoCoverUtils.load(mContext, (ImageView) helper.getView(R.id.item_video_iv), TextUtils.isEmpty(item.getCoverUrl()) ? item.getUrl() : item.getCoverUrl());
     }
 
-    private void setParams(RelativeLayout parentRl,RelativeLayout childRl) {
-        int parentWidth,parentHeight,childWidth,childHeight;
+    private void setParams(RelativeLayout parentRl, RelativeLayout childRl) {
+        int parentWidth, parentHeight, childWidth, childHeight;
         if (MyMediaPlayManager.isIsFullScreen()) {
             childWidth = 150;
             childHeight = 110;
@@ -76,13 +76,14 @@ public class VideoListAdapter extends BaseQuickAdapter<VideoBean, BaseViewHolder
             public void run() {
                 for (int i = 0; i < getData().size(); i++) {
                     getData().get(i).setPlaying(url.equals(getData().get(i).getUrl()));
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            notifyDataSetChanged();
-                        }
-                    });
                 }
+
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
             }
         }).start();
     }
