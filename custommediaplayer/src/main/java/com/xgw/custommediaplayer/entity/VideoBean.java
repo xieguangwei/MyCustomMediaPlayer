@@ -13,6 +13,9 @@ public class VideoBean implements Serializable{
     private String name;
     private boolean isPlaying;
 
+    public VideoBean() {
+    }
+
     public VideoBean(String url, String coverUrl, String name, boolean isPlaying) {
         this.url = url;
         this.coverUrl = coverUrl;
