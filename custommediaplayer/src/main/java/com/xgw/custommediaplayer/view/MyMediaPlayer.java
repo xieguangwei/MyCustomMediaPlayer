@@ -315,7 +315,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
                     hasTouchedListOrSeekBar = true;
                 } else if (action == MotionEvent.ACTION_UP) {
                     mHandler.removeCallbacks(mHideRunnable);
-                    mHandler.postDelayed(mHideRunnable, 1000);
+                    mHandler.postDelayed(mHideRunnable, 2000);
                     hasTouchedListOrSeekBar = false;
                 }
                 return false;
@@ -330,7 +330,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
                     hasTouchedListOrSeekBar = true;
                 } else if (action == MotionEvent.ACTION_UP) {
                     mHandler.removeCallbacks(mHideRunnable);
-                    mHandler.postDelayed(mHideRunnable, 1000);
+                    mHandler.postDelayed(mHideRunnable, 2000);
                     hasTouchedListOrSeekBar = false;
                 }
                 return false;
@@ -691,7 +691,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         playProgressLl.setVisibility(playProgressVisibility);
         videoListRl.setVisibility(videoListVisibility);
         removeCallbacks(mHideRunnable);
-        postDelayed(mHideRunnable, 2000);
+        postDelayed(mHideRunnable, 4000);
     }
 
     public boolean isControlVisibility() {
