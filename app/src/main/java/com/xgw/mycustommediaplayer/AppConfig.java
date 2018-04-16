@@ -13,7 +13,7 @@ public class AppConfig extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        MyMediaPlayerDelegate.getInstance().initApp(this).initLog(true);
+        MyMediaPlayerDelegate.getInstance().initApp(this).initLog(true).initControlDismissDelayMillis(1000);
         Utils.init(this);
     }
 }

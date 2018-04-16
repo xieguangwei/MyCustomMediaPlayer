@@ -33,6 +33,7 @@ import com.xgw.custommediaplayer.constants.ScreenStatus;
 import com.xgw.custommediaplayer.entity.VideoBean;
 import com.xgw.custommediaplayer.listener.VideoPlayListener;
 import com.xgw.custommediaplayer.utils.MyMediaPlayManager;
+import com.xgw.custommediaplayer.utils.MyMediaPlayerDelegate;
 import com.xgw.custommediaplayer.utils.MyVideoControlManager;
 import com.xgw.custommediaplayer.utils.PlayModeUtils;
 import com.xgw.custommediaplayer.utils.VideoCoverUtils;
@@ -169,7 +170,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             playOrPause();
         } else if (id == reloadRl.getId()) {
             //播放出错，重新加载
-            playSpecifiedVideo(playUrl,coverUrl);
+            playSpecifiedVideo(playUrl, coverUrl);
         } else if (id == fullScreenIv.getId()) {
             //全屏/退出全屏
             if (listener != null) {
@@ -298,7 +299,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
                 String coverUrl = videoBean.getCoverUrl();
                 videoListAdapter.setPlay(url, MyMediaPlayer.this);
                 currentProgress = 0;
-                playSpecifiedVideo(url,coverUrl);
+                playSpecifiedVideo(url, coverUrl);
             }
         });
 
@@ -311,11 +312,11 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
-                if (action == MotionEvent.ACTION_DOWN) {
+                if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
                     hasTouchedListOrSeekBar = true;
                 } else if (action == MotionEvent.ACTION_UP) {
                     mHandler.removeCallbacks(mHideRunnable);
-                    mHandler.postDelayed(mHideRunnable, 2000);
+                    mHandler.postDelayed(mHideRunnable, MyMediaPlayerDelegate.getInstance().getDelayMillis() / 2);
                     hasTouchedListOrSeekBar = false;
                 }
                 return false;
@@ -326,11 +327,11 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 int action = event.getAction();
-                if (action == MotionEvent.ACTION_DOWN) {
+                if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
                     hasTouchedListOrSeekBar = true;
                 } else if (action == MotionEvent.ACTION_UP) {
                     mHandler.removeCallbacks(mHideRunnable);
-                    mHandler.postDelayed(mHideRunnable, 2000);
+                    mHandler.postDelayed(mHideRunnable, MyMediaPlayerDelegate.getInstance().getDelayMillis() / 2);
                     hasTouchedListOrSeekBar = false;
                 }
                 return false;
@@ -347,19 +348,19 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             for (int i = 0; i < videoList.size(); i++) {
                 VideoBean item = videoList.get(i);
                 if (item.isPlaying()) {
-                    setPlayUrl(item.getUrl(),item.getCoverUrl());
+                    setPlayUrl(item.getUrl(), item.getCoverUrl());
                     break;
                 }
             }
             if (TextUtils.isEmpty(playUrl)) {
-                setPlayUrl(videoList.get(0).getUrl(),videoList.get(0).getCoverUrl());
+                setPlayUrl(videoList.get(0).getUrl(), videoList.get(0).getCoverUrl());
                 videoListAdapter.setPlay(playUrl, this);
             }
         }
         loadCoverUrl();
     }
 
-    private void setPlayUrl(String playUrl,String coverUrl) {
+    private void setPlayUrl(String playUrl, String coverUrl) {
         this.playUrl = playUrl;
         this.coverUrl = TextUtils.isEmpty(coverUrl) ? playUrl : coverUrl;
     }
@@ -372,7 +373,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             mSurface = new Surface(surfaceTexture);//连接MediaPlayer和TextureView两个对象
             isTextureAvailable = true;
             //设置第一次打开时的播放器
-            playSpecifiedVideo(playUrl,coverUrl);
+            playSpecifiedVideo(playUrl, coverUrl);
         }
 
         @Override
@@ -417,8 +418,8 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
      *
      * @param url
      */
-    public void initPlayUrl(String url,String coverUrl) {
-        setPlayUrl(url,coverUrl);
+    public void initPlayUrl(String url, String coverUrl) {
+        setPlayUrl(url, coverUrl);
         //没设置正在播放的视频，默认播放第一个视频
         if (TextUtils.isEmpty(playUrl)) {
             onErrorHandle(new Exception("initPlayUrl时视频地址为空！！！"));
@@ -456,8 +457,8 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
      *
      * @param url
      */
-    public void playSpecifiedVideo(String url,String coverUrl) {
-        setPlayUrl(url,coverUrl);
+    public void playSpecifiedVideo(String url, String coverUrl) {
+        setPlayUrl(url, coverUrl);
         //没设置正在播放的视频，默认播放第一个视频
         if (TextUtils.isEmpty(playUrl)) {
             onErrorHandle(new Exception("playSpecifiedVideo时视频地址为空!!!"));
@@ -562,15 +563,15 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         int playMode = PlayModeUtils.getPlayMode();
         //单曲循环模式---一直播放该视频
         if (PlayModeUtils.getPlayMode() == PlayMode.PLAY_MODE_SINGLE_CYCLE) {
-            playSpecifiedVideo(playUrl,coverUrl);
+            playSpecifiedVideo(playUrl, coverUrl);
         } else if (playMode == PlayMode.PLAY_MODE_LIST_CYCLE) {//列表循环模式---播放完最后一个视频播放第一个视频
             for (int i = 0; i < videoListAdapter.getData().size(); i++) {
                 VideoBean videoBean = videoListAdapter.getData().get(i);
                 if (videoBean != null && videoBean.isPlaying()) {
                     if (i < videoListAdapter.getData().size() - 1) {
-                        playSpecifiedVideo(videoListAdapter.getData().get(i + 1).getUrl(),videoListAdapter.getData().get(i + 1).getCoverUrl());
+                        playSpecifiedVideo(videoListAdapter.getData().get(i + 1).getUrl(), videoListAdapter.getData().get(i + 1).getCoverUrl());
                     } else {
-                        playSpecifiedVideo(videoListAdapter.getData().get(0).getUrl(),videoListAdapter.getData().get(0).getCoverUrl());
+                        playSpecifiedVideo(videoListAdapter.getData().get(0).getUrl(), videoListAdapter.getData().get(0).getCoverUrl());
                     }
                     break;
                 }
@@ -580,7 +581,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
                 VideoBean videoBean = videoListAdapter.getData().get(i);
                 if (videoBean != null && videoBean.isPlaying()) {
                     if (i < videoListAdapter.getData().size() - 1) {
-                        playSpecifiedVideo(videoListAdapter.getData().get(i + 1).getUrl(),videoListAdapter.getData().get(i + 1).getCoverUrl());
+                        playSpecifiedVideo(videoListAdapter.getData().get(i + 1).getUrl(), videoListAdapter.getData().get(i + 1).getCoverUrl());
                     } else {
                         coverIv.setVisibility(VISIBLE);
                         btnPlay.setVisibility(VISIBLE);
@@ -677,7 +678,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
                 btnPlay.setBackgroundResource(R.drawable.play_pause);
                 //开始播放（新的）
                 //显示TextureView，回调onSurfaceTextureAvailable方法，开始执行新的播放操作
-                playSpecifiedVideo(playUrl,coverUrl);
+                playSpecifiedVideo(playUrl, coverUrl);
             }
             setControlVisibility(GONE, GONE, GONE);
         }
@@ -691,7 +692,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         playProgressLl.setVisibility(playProgressVisibility);
         videoListRl.setVisibility(videoListVisibility);
         removeCallbacks(mHideRunnable);
-        postDelayed(mHideRunnable, 4000);
+        postDelayed(mHideRunnable, MyMediaPlayerDelegate.getInstance().getDelayMillis());
     }
 
     public boolean isControlVisibility() {
@@ -814,7 +815,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
         setPlayModelImage();
         if (!isFirstEnter && isTextureAvailable) {
             btnPlay.setBackgroundResource(R.drawable.play_pause);
-            playSpecifiedVideo(playUrl,coverUrl);
+            playSpecifiedVideo(playUrl, coverUrl);
         }
         isFirstEnter = false;
     }
