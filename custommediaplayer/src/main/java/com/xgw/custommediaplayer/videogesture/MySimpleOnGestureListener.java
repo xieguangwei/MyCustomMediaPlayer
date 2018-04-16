@@ -47,9 +47,12 @@ public class MySimpleOnGestureListener extends GestureDetector.SimpleOnGestureLi
                 if (Math.abs(distanceX) - Math.abs(distanceY) > offsetX) {
                     mScrollMode = ScrollMode.FF_REW;
                 } else {
-                    if (e1.getX() < width / 2) {
-                        mScrollMode = ScrollMode.BRIGHTNESS;
-                    } else {
+//                    if (e1.getX() < width / 2) {
+//                        mScrollMode = ScrollMode.BRIGHTNESS;
+//                    } else {
+//                        mScrollMode = ScrollMode.VOLUME;
+//                    }
+                    if (e1.getX() >= width / 2) {
                         mScrollMode = ScrollMode.VOLUME;
                     }
                 }
