@@ -192,7 +192,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     @Override
     public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
         if (listener != null) {
-            listener.onCacheProgress(playUrl, percentsAvailable);
+            listener.onCacheProgress(url, percentsAvailable);
         }
         //缓存进度回调,设置第二个进度条
         int secondProgress = (int) (mSeekBar.getMax() * (percentsAvailable / 100f));
