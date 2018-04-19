@@ -73,6 +73,12 @@ public class MainActivity extends BaseActivity {
                 mediaPlayer.setLayoutParams(params);
                 mediaPlayer.setScreenParams(ScreenStatus.SCREEN_STATUS_NORMAL);
             }
+
+            @Override
+            public void onCacheProgress(String url, int percentAvailable) {
+                super.onCacheProgress(url, percentAvailable);
+                KLog.e("cacheurl---" + url + ",percent:" + percentAvailable);
+            }
         });
         mediaPlayer.setController(this, new MyVideoControlManager());
     }

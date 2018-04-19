@@ -29,4 +29,9 @@ public abstract class SimpleVideoPlayListener implements VideoPlayListener {
     public void onExitFullScreen() {
 
     }
+
+    @Override
+    public void onCacheProgress(String url, int percentAvailable) {
+
+    }
 }

@@ -8,7 +8,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1
-        versionName "1.7"
+        versionName "1.8"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -38,4 +38,7 @@ dependencies {
     compile 'jp.wasabeef:glide-transformations:3.0.1'
     //万用适配器
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.15'
+
+    //视频缓存（边播边缓存）
+    compile 'com.danikula:videocache:2.7.0'
 }

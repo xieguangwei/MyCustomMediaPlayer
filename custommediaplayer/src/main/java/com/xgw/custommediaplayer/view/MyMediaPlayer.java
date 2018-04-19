@@ -25,6 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.danikula.videocache.CacheListener;
+import com.danikula.videocache.HttpProxyCacheServer;
 import com.socks.library.KLog;
 import com.xgw.custommediaplayer.R;
 import com.xgw.custommediaplayer.adapter.VideoListAdapter;
@@ -40,6 +42,7 @@ import com.xgw.custommediaplayer.utils.VideoCoverUtils;
 import com.xgw.custommediaplayer.videogesture.ShowControlLayout;
 import com.xgw.custommediaplayer.videogesture.VideoGestureLayout;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -48,7 +51,7 @@ import java.util.List;
  * 灵感来自https://github.com/JackChan1999
  */
 
-public class MyMediaPlayer extends RelativeLayout implements View.OnClickListener {
+public class MyMediaPlayer extends RelativeLayout implements View.OnClickListener, CacheListener {
     private MyTextureView textureView;//MediaPlayer显示在其上
     private Button btnPlay;//暂停、播放按钮
 
@@ -184,6 +187,16 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             //播放模式
             setPlayMode();
         }
+    }
+
+    @Override
+    public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
+        if (listener != null) {
+            listener.onCacheProgress(playUrl, percentsAvailable);
+        }
+        //缓存进度回调,设置第二个进度条
+        int secondProgress = (int) (mSeekBar.getMax() * (percentsAvailable / 100f));
+        mSeekBar.setSecondaryProgress(secondProgress);
     }
 
     //隐藏control布局的Runnable
@@ -519,7 +532,7 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     private MediaPlayer.OnBufferingUpdateListener onBufferingUpdateListener = new MediaPlayer.OnBufferingUpdateListener() {
         @Override
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
-            onBufferingUpdateHandle(percent);
+//            onBufferingUpdateHandle(percent);
         }
     };
 
@@ -634,12 +647,16 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     private void openMediaPlayer() {
         KLog.e("openMediaPlayer");
         try {
-            MyMediaPlayManager.release();
+            releaseMediaPlayer();
+
             startLoading();
             mPlayer = MyMediaPlayManager.getInstance();
             mPlayer.reset();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mPlayer.setDataSource(playUrl);
+            //注册缓存策略
+            String proxyUrl = registerCache();
+            //设置代理播放地址
+            mPlayer.setDataSource(proxyUrl);
             //让MediaPlayer和TextureView进行视频画面的结合
             mPlayer.setSurface(mSurface);
             //设置监听
@@ -656,6 +673,27 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             e.printStackTrace();
             onErrorHandle(e);
         }
+    }
+
+    /**
+     * 注册缓存，并返回代理地址
+     *
+     * @return
+     */
+    private String registerCache() {
+        //检测缓存状态
+        checkCachedState();
+        //开启注册缓存策略
+        HttpProxyCacheServer proxy = MyMediaPlayerDelegate.getProxy();
+        proxy.registerCacheListener(this, playUrl);
+        return proxy.getProxyUrl(playUrl);
+    }
+
+    /**
+     * 取消缓存注册
+     */
+    private void unRegisterCache() {
+        MyMediaPlayerDelegate.getProxy().unregisterCacheListener(this);
     }
 
     /**
@@ -795,16 +833,36 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
     }
 
     /**
+     * 检测当前缓存状态，如果缓存完成，则把第二个进度条填满
+     */
+    private void checkCachedState() {
+        HttpProxyCacheServer proxy = MyMediaPlayerDelegate.getProxy();
+        boolean fullyCached = proxy.isCached(playUrl);
+        if (fullyCached) {
+            mSeekBar.setSecondaryProgress(mSeekBar.getMax());
+        }
+    }
+
+    /**
      * 组件onPause中调用该方法（暂停播放）
      */
     public void onPause() {
-        MyMediaPlayManager.release();
+        releaseMediaPlayer();
         if (mHandler != null) {
             mHandler.removeMessages(UPDATE_TIME_AND_PROGRESS);
         }
         btnPlay.setBackgroundResource(R.drawable.play_start);
         coverIv.setVisibility(VISIBLE);
         setControlVisibility(VISIBLE, VISIBLE, VISIBLE);
+    }
+
+    /**
+     * 释放播放器
+     */
+    private void releaseMediaPlayer() {
+        MyMediaPlayManager.release();
+        //释放播放器后取消缓存注册
+        unRegisterCache();
     }
 
     /**

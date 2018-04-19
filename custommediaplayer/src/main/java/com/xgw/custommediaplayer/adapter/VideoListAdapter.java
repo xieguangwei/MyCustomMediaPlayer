@@ -44,13 +44,13 @@ public class VideoListAdapter extends BaseQuickAdapter<VideoBean, BaseViewHolder
         int parentWidth, parentHeight, childWidth, childHeight;
         if (MyMediaPlayManager.isIsFullScreen()) {
             childWidth = 150;
-            childHeight = 110;
+            childHeight = 95;
 
             parentWidth = 160;
             parentHeight = 120;
         } else {
             childWidth = 110;
-            childHeight = 70;
+            childHeight = 65;
 
             parentWidth = 120;
             parentHeight = 80;

@@ -33,4 +33,11 @@ public interface VideoPlayListener {
      * 退出全屏
      */
     void onExitFullScreen();
+
+    /**
+     * 缓存进度
+     * @param url 缓存的url
+     * @param percentAvailable 可用进度
+     */
+    void onCacheProgress(String url,int percentAvailable);
 }
