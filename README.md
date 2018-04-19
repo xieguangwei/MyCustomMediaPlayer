@@ -16,6 +16,6 @@ dependencies {
     compile 'com.github.xieguangwei:MyCustomMediaPlayer:1.9'
 }
 ```
-### 新添加边播边缓存，缓存框架使用的是danikula的[AndroidVideoCache](https://github.com/danikula/AndroidVideoCache)
+## 2.新添加边播边缓存，缓存框架使用的是danikula的[AndroidVideoCache](https://github.com/danikula/AndroidVideoCache)
 若想先缓存，后播放，可参照AndroidVideoCache的[issues#59](https://github.com/danikula/AndroidVideoCache/issues/59)
-### 感兴趣的可以下载demo看下，[同款的基于ExoPlayer封装的播放器>>>](https://github.com/xieguangwei/MyCustomExoPlayer)
+## 3.感兴趣的可以下载demo看下，[同款的基于ExoPlayer封装的播放器>>>](https://github.com/xieguangwei/MyCustomExoPlayer)
