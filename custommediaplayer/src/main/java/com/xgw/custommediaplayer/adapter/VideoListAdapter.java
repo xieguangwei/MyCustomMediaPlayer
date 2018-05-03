@@ -67,15 +67,15 @@ public class VideoListAdapter extends BaseQuickAdapter<VideoBean, BaseViewHolder
         childRl.setLayoutParams(childParams);
     }
 
-    public void setPlay(final String url, final View view) {
-        if (TextUtils.isEmpty(url)) {
+    public void setPlay(final int position, final View view) {
+        if (position > getData().size() - 1 || position < 0 || view == null) {
             return;
         }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 for (int i = 0; i < getData().size(); i++) {
-                    getData().get(i).setPlaying(url.equals(getData().get(i).getUrl()));
+                    getData().get(i).setPlaying(i == position);
                 }
 
                 view.post(new Runnable() {
