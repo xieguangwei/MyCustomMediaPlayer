@@ -103,6 +103,8 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
 
     private String coverUrl;//封面url
 
+    private boolean cacheEnabled = true;
+
     /**
      * handler每隔500ms刷新一次当前播放进度
      */
@@ -164,6 +166,10 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
 
     public void setController(Activity activity, MyVideoControlManager myVideoControlManager) {
         myVideoControlManager.bindView(activity, this, vgl, scl);
+    }
+
+    public void setCacheEnabled(boolean enabled) {
+        this.cacheEnabled = enabled;
     }
 
     @Override
@@ -654,10 +660,14 @@ public class MyMediaPlayer extends RelativeLayout implements View.OnClickListene
             mPlayer = MyMediaPlayManager.getInstance();
             mPlayer.reset();
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            //注册缓存策略
-            String proxyUrl = registerCache();
-            //设置代理播放地址
-            mPlayer.setDataSource(proxyUrl);
+            if (cacheEnabled) {
+                //注册缓存策略
+                String proxyUrl = registerCache();
+                //设置代理播放地址
+                mPlayer.setDataSource(proxyUrl);
+            } else {
+                mPlayer.setDataSource(playUrl);
+            }
             //让MediaPlayer和TextureView进行视频画面的结合
             mPlayer.setSurface(mSurface);
             //设置监听

@@ -13,7 +13,7 @@ allprojects {
 ### Step 2. Add the dependency
 ```
 dependencies {
-    compile 'com.github.xieguangwei:MyCustomMediaPlayer:2.0'
+    compile 'com.github.xieguangwei:MyCustomMediaPlayer:2.1'
 }
 ```
 ## 2.新添加边播边缓存，缓存框架使用的是danikula的[AndroidVideoCache](https://github.com/danikula/AndroidVideoCache)
